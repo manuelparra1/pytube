@@ -20,21 +20,21 @@ def on_progress(stream, chunk, bytes_remaining):
 
 # ## URL
 
-# In[3]:
+# In[4]:
 
 
-playlist_url = "https://youtube.com/playlist?list=PLhoH5vyxr6Qq41NFL4GvhFp-WLd5xzIzZ"
+playlist_url = "https://youtube.com/playlist?list=PLTR5ZfYubz5Up1SQiaJmB29kgRNNUsClM"
 
 
 # ## Variables
 
-# In[ ]:
+# In[5]:
 
 
 # Setup Variables
 # ---------------
 playlist = Playlist(playlist_url)
-output_path = "pytube/YouTube-Videos/"
+output_path = "Downloads/"
 
 # Create subdirectory using the playlist name
 playlist_name = playlist.title
@@ -66,6 +66,9 @@ for video in playlist.videos:
     video_counter += 1  # Increment the counter for the next video
 
     remaining_videos = total_videos - video_counter + 1
-    overall_percentage = (remaining_videos / total_videos) * 100
-    print(f"Overall Progress: {remaining_videos}/{total_videos} videos remaining ({overall_percentage:.2f}%)\n")
+    overall_percentage = (video_counter / total_videos) * 100
+    overall_progress = f"Overall Progress: ({overall_percentage:.2f}%) {video_counter} of {total_videos} videos completed - {remaining_videos} Remaining"
+    print(overall_progress)
+
+print("Download complete!")
 
