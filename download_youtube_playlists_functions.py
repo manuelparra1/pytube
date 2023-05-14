@@ -28,8 +28,8 @@ def sanitize_filename(filename):
 # In[ ]:
 
 
-def on_progress(stream, chunk, bytes_remaining):
-    total_bytes = stream.filesize
+def on_progress(chunk, file_handler, bytes_remaining, video, video_counter, total_videos):
+    total_bytes = video.streams.get_highest_resolution().filesize
     bytes_downloaded = total_bytes - bytes_remaining
     percentage = (bytes_downloaded / total_bytes) * 100
     progress = f"Downloading: [{video_counter}/{total_videos}] {video.title[:70]}... ({percentage:.2f}%)"
@@ -61,8 +61,6 @@ def download_playlist(playlist_url, output_path):
     total_videos = len(playlist.videos)  # Get the total number of videos in the playlist
 
     for video in playlist.videos:
-        video.register_on_progress_callback(on_progress)
-
         # Assign the formatted counter value to the file name
         filename = f"{video_counter:03} - {video.title}.mp4"
 
@@ -72,7 +70,11 @@ def download_playlist(playlist_url, output_path):
         # Set the output path to the playlist subdirectory
         video_output_path = os.path.join(playlist_dir, filename)
 
-        video.streams.get_highest_resolution().download(output_path=video_output_path)
+        # Register the progress callback function with the video object and the counter
+        video.register_on_progress_callback(lambda chunk, file_handler, bytes_remaining: on_progress(chunk, file_handler, bytes_remaining, video, video_counter, total_videos))
+
+        # Download the highest resolution stream to the playlist directory
+        video.streams.get_highest_resolution().download(output_path=playlist_dir, filename=filename)
 
         video_counter += 1  # Increment the counter for the next video
 
@@ -83,11 +85,16 @@ def download_playlist(playlist_url, output_path):
 
 # ## Main
 
-# In[ ]:
+# In[2]:
 
 
-# Example usage
 playlist_url = "https://youtube.com/playlist?list=PLTR5ZfYubz5Up1SQiaJmB29kgRNNUsClM"
 output_path = "Downloads/"
 download_playlist(playlist_url, output_path)
+
+
+# In[ ]:
+
+
+
 
